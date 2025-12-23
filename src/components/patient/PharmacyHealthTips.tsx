@@ -147,46 +147,70 @@ export const PharmacyHealthTips: React.FC<PharmacyHealthTipsProps> = ({
         </div>
       </div>
 
-      {/* Featured Tip */}
-      <Card className="bg-gradient-to-r from-blue-50 to-green-50 border-blue-200">
-        <CardContent className="p-6">
-          <div className="flex items-start gap-4">
-            <div className="flex-shrink-0">
+      {/* Enhanced Featured Tip */}
+      <Card className="bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 border-emerald-200 shadow-xl hover:shadow-2xl transition-all duration-300">
+        <CardHeader className="bg-gradient-to-r from-emerald-600 to-cyan-600 text-white rounded-t-lg">
+          <CardTitle className="flex items-center gap-2 text-xl">
+            <Activity className="h-6 w-6" />
+            Featured Health Tip
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-8">
+          <div className="flex items-start gap-6">
+            <div className="flex-shrink-0 p-4 bg-white rounded-2xl shadow-lg border border-emerald-100">
               {getIcon(filteredTips[currentTipIndex]?.icon)}
             </div>
             <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
-                <Badge className={getCategoryColor(filteredTips[currentTipIndex]?.category)}>
+              <div className="flex items-center gap-3 mb-4">
+                <Badge className={`${getCategoryColor(filteredTips[currentTipIndex]?.category)} px-4 py-2 text-sm font-medium rounded-xl`}>
                   {filteredTips[currentTipIndex]?.category}
                 </Badge>
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
                   {filteredTips[currentTipIndex]?.readTime} min read
                 </span>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4 leading-tight">
                 {filteredTips[currentTipIndex]?.title}
               </h3>
-              <p className="text-gray-700">
+              <p className="text-gray-700 text-lg leading-relaxed">
                 {filteredTips[currentTipIndex]?.content}
               </p>
+              <div className="flex justify-center mt-6 space-x-2">
+                {filteredTips.map((_, index) => (
+                  <div
+                    key={index}
+                    className={`h-3 w-3 rounded-full transition-all duration-300 cursor-pointer ${
+                      index === currentTipIndex ? 'bg-emerald-500 scale-125' : 'bg-gray-300 hover:bg-gray-400'
+                    }`}
+                    onClick={() => setCurrentTipIndex(index)}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Category Filter */}
-      <div className="flex flex-wrap gap-2">
-        {categories.map((category) => (
-          <Button
-            key={category.id}
-            variant={selectedCategory === category.id ? "default" : "outline"}
-            onClick={() => setSelectedCategory(category.id)}
-            className="flex items-center gap-2"
-          >
-            <category.icon className="h-4 w-4" />
-            {category.label}
-          </Button>
-        ))}
+      {/* Enhanced Category Filter */}
+      <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Filter by Category</h3>
+        <div className="flex flex-wrap gap-3">
+          {categories.map((category) => (
+            <Button
+              key={category.id}
+              variant={selectedCategory === category.id ? "default" : "outline"}
+              onClick={() => setSelectedCategory(category.id)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-200 ${
+                selectedCategory === category.id
+                  ? 'bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-700 hover:to-cyan-700 shadow-lg'
+                  : 'hover:bg-gray-50 border-gray-200'
+              }`}
+            >
+              <category.icon className="h-4 w-4" />
+              {category.label}
+            </Button>
+          ))}
+        </div>
       </div>
 
       {/* Tips Grid */}
@@ -216,12 +240,12 @@ export const PharmacyHealthTips: React.FC<PharmacyHealthTipsProps> = ({
         ))}
       </div>
 
-      {/* Health Reminder */}
-      <Alert>
-        <Heart className="h-4 w-4" />
-        <AlertDescription>
-          <strong>Remember:</strong> These tips are for general health information only.
-          Always consult your healthcare provider for personalized medical advice.
+      {/* Enhanced Health Reminder */}
+      <Alert className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200 rounded-2xl">
+        <Heart className="h-5 w-5 text-amber-600" />
+        <AlertDescription className="text-amber-800">
+          <strong className="text-amber-900">Important Reminder:</strong> These tips are for general health information only.
+          Always consult your healthcare provider for personalized medical advice and before making any significant changes to your health routine.
         </AlertDescription>
       </Alert>
     </div>

@@ -36,6 +36,14 @@ async function apiCall<T>(
       throw new Error(errorMessage);
     }
 
+    // Handle empty response bodies (e.g., DELETE operations)
+    const contentLength = response.headers.get('content-length');
+    const contentType = response.headers.get('content-type');
+
+    if (contentLength === '0' || !contentType || !contentType.includes('application/json')) {
+      return undefined as T;
+    }
+
     const data = await response.json();
     return data;
   } catch (error) {
@@ -108,142 +116,142 @@ export const patientAPI = {
 
 // Doctor API
 export const doctorAPI = {
-  getAll: () => apiCall<any[]>('/api/doctors'),
+  getAll: () => apiCall<any[]>('/doctors'),
 
-  getById: (id: string) => apiCall<any>(`/api/doctors/${id}`),
+  getById: (id: string) => apiCall<any>(`/doctors/${id}`),
 
   create: (doctor: any) =>
-    apiCall<any>('/api/doctors', {
+    apiCall<any>('/doctors', {
       method: 'POST',
       body: JSON.stringify(doctor),
     }),
 
   update: (id: string, doctor: any) =>
-    apiCall<any>(`/api/doctors/${id}`, {
+    apiCall<any>(`/doctors/${id}`, {
       method: 'PUT',
       body: JSON.stringify(doctor),
     }),
 
   approve: (id: string) =>
-    apiCall<any>(`/api/doctors/${id}/approve`, {
+    apiCall<any>(`/doctors/${id}/approve`, {
       method: 'PUT',
     }),
 
   suspend: (id: string) =>
-    apiCall<any>(`/api/doctors/${id}/suspend`, {
+    apiCall<any>(`/doctors/${id}/suspend`, {
       method: 'PUT',
     }),
 
   delete: (id: string) =>
-    apiCall<void>(`/api/doctors/${id}`, {
+    apiCall<void>(`/doctors/${id}`, {
       method: 'DELETE',
     }),
 
   // Schedule management
-  getSchedule: (doctorId: string) => apiCall<any>(`/api/doctors/${doctorId}/schedule`),
+  getSchedule: (doctorId: string) => apiCall<any>(`/doctors/${doctorId}/schedule`),
   addScheduleSlot: (doctorId: string, slot: any) =>
-    apiCall<any>(`/api/doctors/${doctorId}/schedule/slots`, {
+    apiCall<any>(`/doctors/${doctorId}/schedule/slots`, {
       method: 'POST',
       body: JSON.stringify(slot),
     }),
   updateScheduleSlot: (doctorId: string, slotId: string, slot: any) =>
-    apiCall<any>(`/api/doctors/${doctorId}/schedule/slots/${slotId}`, {
+    apiCall<any>(`/doctors/${doctorId}/schedule/slots/${slotId}`, {
       method: 'PUT',
       body: JSON.stringify(slot),
     }),
   deleteScheduleSlot: (doctorId: string, slotId: string) =>
-    apiCall<any>(`/api/doctors/${doctorId}/schedule/slots/${slotId}`, {
+    apiCall<any>(`/doctors/${doctorId}/schedule/slots/${slotId}`, {
       method: 'DELETE',
     }),
 
   // Patient management
-  getPatients: (doctorId: string) => apiCall<any[]>(`/api/doctors/${doctorId}/patients`),
+  getPatients: (doctorId: string) => apiCall<any[]>(`/doctors/${doctorId}/patients`),
   getPatientDetails: (doctorId: string, patientId: string) =>
-    apiCall<any>(`/api/doctors/${doctorId}/patients/${patientId}`),
+    apiCall<any>(`/doctors/${doctorId}/patients/${patientId}`),
   addPatientNote: (doctorId: string, patientId: string, note: string) =>
-    apiCall<any>(`/api/doctors/${doctorId}/patients/${patientId}/notes`, {
+    apiCall<any>(`/doctors/${doctorId}/patients/${patientId}/notes`, {
       method: 'POST',
       body: JSON.stringify({ note }),
     }),
 };
 // Hospital API
 export const hospitalAPI = {
-  getAll: () => apiCall<any[]>('/api/hospitals'),
+  getAll: () => apiCall<any[]>('/hospitals'),
 
-  getById: (id: string) => apiCall<any>(`/api/hospitals/${id}`),
+  getById: (id: string) => apiCall<any>(`/hospitals/${id}`),
 
-  getDoctors: (hospitalId: string) => apiCall<any[]>(`/api/hospitals/${hospitalId}/doctors`),
+  getDoctors: (hospitalId: string) => apiCall<any[]>(`/hospitals/${hospitalId}/doctors`),
 
   create: (hospital: any) =>
-    apiCall<any>('/api/hospitals', {
+    apiCall<any>('/hospitals', {
       method: 'POST',
       body: JSON.stringify(hospital),
     }),
 
   update: (id: string, hospital: any) =>
-    apiCall<any>(`/api/hospitals/${id}`, {
+    apiCall<any>(`/hospitals/${id}`, {
       method: 'PUT',
       body: JSON.stringify(hospital),
     }),
 
   approve: (id: string) =>
-    apiCall<any>(`/api/hospitals/${id}/approve`, {
+    apiCall<any>(`/hospitals/${id}/approve`, {
       method: 'PUT',
     }),
 
   reject: (id: string) =>
-    apiCall<any>(`/api/hospitals/${id}/reject`, {
+    apiCall<any>(`/hospitals/${id}/reject`, {
       method: 'PUT',
     }),
 
   delete: (id: string) =>
-    apiCall<void>(`/api/hospitals/${id}`, {
+    apiCall<void>(`/hospitals/${id}`, {
       method: 'DELETE',
     }),
 
   // Patient management
   getPatients: (hospitalId: string) =>
-    apiCall<any[]>(`/api/hospitals/${hospitalId}/patients`),
+    apiCall<any[]>(`/hospitals/${hospitalId}/patients`),
   getPatientDetails: (hospitalId: string, patientId: string) =>
-    apiCall<any>(`/api/hospitals/${hospitalId}/patients/${patientId}`),
+    apiCall<any>(`/hospitals/${hospitalId}/patients/${patientId}`),
   addPatientNote: (hospitalId: string, patientId: string, note: string) =>
-    apiCall<any>(`/api/hospitals/${hospitalId}/patients/${patientId}/notes`, {
+    apiCall<any>(`/hospitals/${hospitalId}/patients/${patientId}/notes`, {
       method: 'POST',
       body: JSON.stringify({ note }),
     }),
 
   // Schedule management
-  getSchedule: (hospitalId: string) => apiCall<any>(`/api/hospitals/${hospitalId}/schedule`),
+  getSchedule: (hospitalId: string) => apiCall<any>(`/hospitals/${hospitalId}/schedule`),
   addScheduleSlot: (hospitalId: string, slot: any) =>
-    apiCall<any>(`/api/hospitals/${hospitalId}/schedule/slots`, {
+    apiCall<any>(`/hospitals/${hospitalId}/schedule/slots`, {
       method: 'POST',
       body: JSON.stringify(slot),
     }),
   updateScheduleSlot: (hospitalId: string, slotId: string, slot: any) =>
-    apiCall<any>(`/api/hospitals/${hospitalId}/schedule/slots/${slotId}`, {
+    apiCall<any>(`/hospitals/${hospitalId}/schedule/slots/${slotId}`, {
       method: 'PUT',
       body: JSON.stringify(slot),
     }),
   deleteScheduleSlot: (hospitalId: string, slotId: string) =>
-    apiCall<any>(`/api/hospitals/${hospitalId}/schedule/slots/${slotId}`, {
+    apiCall<any>(`/hospitals/${hospitalId}/schedule/slots/${slotId}`, {
       method: 'DELETE',
     }),
 };
 
 // Appointment API
 export const appointmentAPI = {
-  getAll: () => apiCall<any[]>('/api/appointments'),
+  getAll: () => apiCall<any[]>('/appointments'),
 
-  getById: (id: string) => apiCall<any>(`/api/appointments/${id}`),
+  getById: (id: string) => apiCall<any>(`/appointments/${id}`),
 
   getByPatient: (patientId: string) =>
-    apiCall<any[]>(`/api/appointments/patient/${patientId}`),
+    apiCall<any[]>(`/appointments/patient/${patientId}`),
 
   getByDoctor: (doctorId: string) =>
-    apiCall<any[]>(`/api/appointments/doctor/${doctorId}`),
+    apiCall<any[]>(`/appointments/doctor/${doctorId}`),
 
   create: (appointment: any) =>
-    apiCall<any>('/api/appointments', {
+    apiCall<any>('/appointments', {
       method: 'POST',
       body: JSON.stringify({
         patient: { id: appointment.patientId },
@@ -260,7 +268,7 @@ export const appointmentAPI = {
     }),
 
   update: (id: string, appointment: any) =>
-    apiCall<any>(`/api/appointments/${id}`, {
+    apiCall<any>(`/appointments/${id}`, {
       method: 'PUT',
       body: JSON.stringify({
         status: appointment.status?.toUpperCase(),
@@ -271,89 +279,89 @@ export const appointmentAPI = {
     }),
 
   cancel: (id: string) =>
-    apiCall<any>(`/api/appointments/${id}/cancel`, {
+    apiCall<any>(`/appointments/${id}/cancel`, {
       method: 'PUT',
     }),
 
   complete: (id: string, notes?: string) =>
-    apiCall<any>(`/api/appointments/${id}/complete`, {
+    apiCall<any>(`/appointments/${id}/complete`, {
       method: 'PUT',
       body: JSON.stringify({ notes }),
     }),
 
   reschedule: (id: string, date: string, time: string) =>
-    apiCall<any>(`/api/appointments/${id}/reschedule`, {
+    apiCall<any>(`/appointments/${id}/reschedule`, {
       method: 'PUT',
       body: JSON.stringify({ appointmentDate: date, appointmentTime: time }),
     }),
 
   confirmAppointment: (id: string) =>
-    apiCall<any>(`/api/appointments/${id}/confirm`, {
+    apiCall<any>(`/appointments/${id}/confirm`, {
       method: 'PUT',
     }),
 };
 
 // Medicine API
 export const medicineAPI = {
-  getAll: () => apiCall<any[]>('/api/medicines'),
+  getAll: () => apiCall<any[]>('/medicines'),
 
-  getById: (id: string) => apiCall<any>(`/api/medicines/${id}`),
+  getById: (id: string) => apiCall<any>(`/medicines/${id}`),
 
   search: (query: string) =>
-    apiCall<any[]>(`/api/medicines/search?q=${encodeURIComponent(query)}`),
+    apiCall<any[]>(`/medicines/search?q=${encodeURIComponent(query)}`),
 
   create: (medicine: any) =>
-    apiCall<any>('/api/medicines', {
+    apiCall<any>('/medicines', {
       method: 'POST',
       body: JSON.stringify(medicine),
     }),
 
   update: (id: string, medicine: any) =>
-    apiCall<any>(`/api/medicines/${id}`, {
+    apiCall<any>(`/medicines/${id}`, {
       method: 'PUT',
       body: JSON.stringify(medicine),
     }),
 
   delete: (id: string) =>
-    apiCall<void>(`/api/medicines/${id}`, {
+    apiCall<void>(`/medicines/${id}`, {
       method: 'DELETE',
     }),
 };
 
 // Order API
 export const orderAPI = {
-  getAll: () => apiCall<any[]>('/api/orders'),
+  getAll: () => apiCall<any[]>('/orders'),
 
-  getById: (id: string) => apiCall<any>(`/api/orders/${id}`),
+  getById: (id: string) => apiCall<any>(`/orders/${id}`),
 
   getByPatient: (patientId: string) =>
-    apiCall<any[]>(`/api/orders/patient/${patientId}`),
+    apiCall<any[]>(`/orders/patient/${patientId}`),
 
   create: (order: any) =>
-    apiCall<any>('/api/orders', {
+    apiCall<any>('/orders', {
       method: 'POST',
       body: JSON.stringify(order),
     }),
 
   update: (id: string, order: any) =>
-    apiCall<any>(`/api/orders/${id}`, {
+    apiCall<any>(`/orders/${id}`, {
       method: 'PUT',
       body: JSON.stringify(order),
     }),
 
   updateStatus: (id: string, status: string) =>
-    apiCall<any>(`/api/orders/${id}/status`, {
+    apiCall<any>(`/orders/${id}/status`, {
       method: 'PUT',
       body: JSON.stringify({ status }),
     }),
 
   cancel: (id: string) =>
-    apiCall<any>(`/api/orders/${id}/cancel`, {
+    apiCall<any>(`/orders/${id}/cancel`, {
       method: 'PUT',
     }),
 
   delete: (id: string) =>
-    apiCall<void>(`/api/orders/${id}`, {
+    apiCall<void>(`/orders/${id}`, {
       method: 'DELETE',
     }),
 };
@@ -362,7 +370,7 @@ export const orderAPI = {
 export const prescriptionAPI = {
   upload: async (formData: FormData) => {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE_URL}/api/prescriptions/upload`, {
+    const response = await fetch(`${API_BASE_URL}/prescriptions/upload`, {
       method: 'POST',
       headers: {
         ...(token && { Authorization: `Bearer ${token}` }),
@@ -378,10 +386,10 @@ export const prescriptionAPI = {
   },
 
   getByPatient: (patientId: string) =>
-    apiCall<any[]>(`/api/prescriptions/patient/${patientId}`),
+    apiCall<any[]>(`/prescriptions/patient/${patientId}`),
 
   create: (prescription: any) =>
-    apiCall<any>('/api/prescriptions', {
+    apiCall<any>('/prescriptions', {
       method: 'POST',
       body: JSON.stringify(prescription),
     }),
@@ -391,44 +399,44 @@ export const prescriptionAPI = {
 
 // Nutrition API
 export const nutritionAPI = {
-  getPlans: () => apiCall<any[]>('/api/nutrition/plans'),
+  getPlans: () => apiCall<any[]>('/nutrition/plans'),
 
   getPlanByPatient: (patientId: string) =>
-    apiCall<any>(`/api/nutrition/plans/patient/${patientId}`),
+    apiCall<any>(`/nutrition/plans/patient/${patientId}`),
 
   createPlan: (plan: any) =>
-    apiCall<any>('/api/nutrition/plans', {
+    apiCall<any>('/nutrition/plans', {
       method: 'POST',
       body: JSON.stringify(plan),
     }),
 
   updatePlan: (id: string, plan: any) =>
-    apiCall<any>(`/api/nutrition/plans/${id}`, {
+    apiCall<any>(`/nutrition/plans/${id}`, {
       method: 'PUT',
       body: JSON.stringify(plan),
     }),
 
-  getMeals: () => apiCall<any[]>('/api/nutrition/meals'),
+  getMeals: () => apiCall<any[]>('/nutrition/meals'),
 
   getRecipesByDisease: (disease: string) =>
-    apiCall<any[]>(`/api/nutrition/recipes?disease=${encodeURIComponent(disease)}`),
+    apiCall<any[]>(`/nutrition/recipes?disease=${encodeURIComponent(disease)}`),
 };
 
 // Chat API
 export const chatAPI = {
   getChatRooms: (userId: string, userType: string) =>
-    apiCall<any[]>(`/api/chat/rooms?userId=${userId}&userType=${userType}`),
+    apiCall<any[]>(`/chat/rooms?userId=${userId}&userType=${userType}`),
 
   getChatRoom: (chatRoomId: string) =>
-    apiCall<any>(`/api/chat/rooms/${chatRoomId}`),
+    apiCall<any>(`/chat/rooms/${chatRoomId}`),
 
   createChatRoom: (appointmentId: string) =>
-    apiCall<any>(`/api/chat/rooms/create?appointmentId=${appointmentId}`, {
+    apiCall<any>(`/chat/rooms/create?appointmentId=${appointmentId}`, {
       method: 'POST',
     }),
 
   getChatMessages: (chatRoomId: string) =>
-    apiCall<any[]>(`/api/chat/rooms/${chatRoomId}/messages`),
+    apiCall<any[]>(`/chat/rooms/${chatRoomId}/messages`),
 
   sendMessage: (chatRoomId: string, messageData: {
     senderId: string;
@@ -436,118 +444,118 @@ export const chatAPI = {
     senderRole: string;
     content: string;
   }) =>
-    apiCall<any>(`/api/chat/rooms/${chatRoomId}/messages`, {
+    apiCall<any>(`/chat/rooms/${chatRoomId}/messages`, {
       method: 'POST',
       body: JSON.stringify(messageData),
     }),
 
   markMessagesAsRead: (chatRoomId: string, userId: string, userType: string) =>
-    apiCall<void>(`/api/chat/rooms/${chatRoomId}/read?userId=${userId}&userType=${userType}`, {
+    apiCall<void>(`/chat/rooms/${chatRoomId}/read?userId=${userId}&userType=${userType}`, {
       method: 'PUT',
     }),
 
   markMessagesAsDelivered: (chatRoomId: string, userId: string, userType: string) =>
-    apiCall<void>(`/api/chat/rooms/${chatRoomId}/delivered?userId=${userId}&userType=${userType}`, {
+    apiCall<void>(`/chat/rooms/${chatRoomId}/delivered?userId=${userId}&userType=${userType}`, {
       method: 'PUT',
     }),
 
   getUnreadCount: (userId: string, userType: string) =>
-    apiCall<{ unreadCount: number }>(`/api/chat/unread?userId=${userId}&userType=${userType}`),
+    apiCall<{ unreadCount: number }>(`/chat/unread?userId=${userId}&userType=${userType}`),
 
   archiveChatRoom: (chatRoomId: string) =>
-    apiCall<void>(`/api/chat/rooms/${chatRoomId}/archive`, {
+    apiCall<void>(`/chat/rooms/${chatRoomId}/archive`, {
       method: 'PUT',
     }),
 };
 
 // Yoga API
 export const yogaAPI = {
-  getTrainers: () => apiCall<any[]>('/api/yoga/trainers'),
+  getTrainers: () => apiCall<any[]>('/yoga/trainers'),
 
-  getTrainerById: (id: string) => apiCall<any>(`/api/yoga/trainers/${id}`),
+  getTrainerById: (id: string) => apiCall<any>(`/yoga/trainers/${id}`),
 
   bookSession: (booking: any) =>
-    apiCall<any>('/api/yoga/sessions', {
+    apiCall<any>('/yoga/sessions', {
       method: 'POST',
       body: JSON.stringify(booking),
     }),
 
   getSessionsByPatient: (patientId: string) =>
-    apiCall<any[]>(`/api/yoga/sessions/patient/${patientId}`),
+    apiCall<any[]>(`/yoga/sessions/patient/${patientId}`),
 
-  getVideos: () => apiCall<any[]>('/api/yoga/videos'),
+  getVideos: () => apiCall<any[]>('/yoga/videos'),
 };
 
 // Payment API
 export const paymentAPI = {
-  getAll: () => apiCall<any[]>('/api/payments'),
+  getAll: () => apiCall<any[]>('/payments'),
 
-  getById: (id: string) => apiCall<any>(`/api/payments/${id}`),
+  getById: (id: string) => apiCall<any>(`/payments/${id}`),
 
-  getByPatient: (patientId: string) => apiCall<any[]>(`/api/payments/patient/${patientId}`),
+  getByPatient: (patientId: string) => apiCall<any[]>(`/payments/patient/${patientId}`),
 
-  getByAppointment: (appointmentId: string) => apiCall<any[]>(`/api/payments/appointment/${appointmentId}`),
+  getByAppointment: (appointmentId: string) => apiCall<any[]>(`/payments/appointment/${appointmentId}`),
 
   create: (payment: any) =>
-    apiCall<any>('/api/payments', {
+    apiCall<any>('/payments', {
       method: 'POST',
       body: JSON.stringify(payment),
     }),
 
   process: (id: string) =>
-    apiCall<any>(`/api/payments/${id}/process`, {
+    apiCall<any>(`/payments/${id}/process`, {
       method: 'PUT',
     }),
 
   refund: (id: string, reason: string) =>
-    apiCall<any>(`/api/payments/${id}/refund`, {
+    apiCall<any>(`/payments/${id}/refund`, {
       method: 'PUT',
       body: JSON.stringify({ reason }),
     }),
 
-  getCompletedByPatient: (patientId: string) => apiCall<any[]>(`/api/payments/patient/${patientId}/completed`),
+  getCompletedByPatient: (patientId: string) => apiCall<any[]>(`/payments/patient/${patientId}/completed`),
 
-  getPaymentStats: (patientId: string) => apiCall<any>(`/api/payments/patient/${patientId}/stats`),
+  getPaymentStats: (patientId: string) => apiCall<any>(`/payments/patient/${patientId}/stats`),
 };
 
 // Feedback API
 export const feedbackAPI = {
-  getAll: () => apiCall<any[]>('/api/feedback'),
+  getAll: () => apiCall<any[]>('/feedback'),
 
-  getById: (id: string) => apiCall<any>(`/api/feedback/${id}`),
+  getById: (id: string) => apiCall<any>(`/feedback/${id}`),
 
-  getByPatient: (patientId: string) => apiCall<any[]>(`/api/feedback/patient/${patientId}`),
+  getByPatient: (patientId: string) => apiCall<any[]>(`/feedback/patient/${patientId}`),
 
-  getByDoctor: (doctorId: string) => apiCall<any[]>(`/api/feedback/doctor/${doctorId}`),
+  getByDoctor: (doctorId: string) => apiCall<any[]>(`/feedback/doctor/${doctorId}`),
 
-  getByAppointment: (appointmentId: string) => apiCall<any[]>(`/api/feedback/appointment/${appointmentId}`),
+  getByAppointment: (appointmentId: string) => apiCall<any[]>(`/feedback/appointment/${appointmentId}`),
 
   create: (feedback: any) =>
-    apiCall<any>('/api/feedback', {
+    apiCall<any>('/feedback', {
       method: 'POST',
       body: JSON.stringify(feedback),
     }),
 
   update: (id: string, feedback: any) =>
-    apiCall<any>(`/api/feedback/${id}`, {
+    apiCall<any>(`/feedback/${id}`, {
       method: 'PUT',
       body: JSON.stringify(feedback),
     }),
 
-  getDoctorRating: (doctorId: string) => apiCall<any>(`/api/feedback/doctor/${doctorId}/rating`),
+  getDoctorRating: (doctorId: string) => apiCall<any>(`/feedback/doctor/${doctorId}/rating`),
 
   getRecentByType: (type: string, limit?: number) =>
-    apiCall<any[]>(`/api/feedback/recent/${type}?limit=${limit || 10}`),
+    apiCall<any[]>(`/feedback/recent/${type}?limit=${limit || 10}`),
 
   delete: (id: string) =>
-    apiCall<void>(`/api/feedback/${id}`, {
+    apiCall<void>(`/feedback/${id}`, {
       method: 'DELETE',
     }),
 };
 
 // Admin API
 export const adminAPI = {
-  getStats: () => apiCall<any>('/api/admin/stats'),
+  getStats: () => apiCall<any>('/admin/stats'),
 
   // Patient management
   getAllPatients: (page?: number, size?: number, sortBy?: string, sortDir?: string, search?: string) => {
@@ -557,114 +565,121 @@ export const adminAPI = {
     if (sortBy) params.append('sortBy', sortBy);
     if (sortDir) params.append('sortDir', sortDir);
     if (search) params.append('search', search);
-    return apiCall<any>(`/api/patients?${params.toString()}`);
+    return apiCall<any>(`/patients?${params.toString()}`);
   },
-  getPatientById: (id: string) => apiCall<any>(`/api/patients/${id}`),
+  getPatientById: (id: string) => apiCall<any>(`/patients/${id}`),
   updatePatient: (id: string, patient: any) =>
-    apiCall<any>(`/api/patients/${id}`, {
+    apiCall<any>(`/patients/${id}`, {
       method: 'PUT',
       body: JSON.stringify(patient),
     }),
   deletePatient: (id: string) =>
-    apiCall<void>(`/api/patients/${id}`, {
+    apiCall<void>(`/patients/${id}`, {
       method: 'DELETE',
     }),
 
   // Doctor management
-  getAllDoctors: () => apiCall<any[]>('/api/admin/doctors'),
-  getDoctorById: (id: string) => apiCall<any>(`/api/admin/doctors/${id}`),
+  getAllDoctors: () => apiCall<any[]>('/admin/doctors'),
+  getDoctorById: (id: string) => apiCall<any>(`/admin/doctors/${id}`),
   updateDoctor: (id: string, doctor: any) =>
-    apiCall<any>(`/api/admin/doctors/${id}`, {
+    apiCall<any>(`/admin/doctors/${id}`, {
       method: 'PUT',
       body: JSON.stringify(doctor),
     }),
   approveDoctor: (id: string) =>
-    apiCall<any>(`/api/admin/doctors/${id}/approve`, {
+    apiCall<any>(`/admin/doctors/${id}/approve`, {
       method: 'PUT',
     }),
   suspendDoctor: (id: string) =>
-    apiCall<any>(`/api/admin/doctors/${id}/suspend`, {
+    apiCall<any>(`/admin/doctors/${id}/suspend`, {
       method: 'PUT',
     }),
   deleteDoctor: (id: string) =>
-    apiCall<void>(`/api/admin/doctors/${id}`, {
+    apiCall<void>(`/admin/doctors/${id}`, {
       method: 'DELETE',
     }),
 
   // Hospital management
-  getAllHospitals: () => apiCall<any[]>('/api/admin/hospitals'),
-  getHospitalById: (id: string) => apiCall<any>(`/api/admin/hospitals/${id}`),
+  getAllHospitals: () => apiCall<any[]>('/admin/hospitals'),
+  getHospitalById: (id: string) => apiCall<any>(`/admin/hospitals/${id}`),
   updateHospital: (id: string, hospital: any) =>
-    apiCall<any>(`/api/admin/hospitals/${id}`, {
+    apiCall<any>(`/admin/hospitals/${id}`, {
       method: 'PUT',
       body: JSON.stringify(hospital),
     }),
   approveHospital: (id: string) =>
-    apiCall<any>(`/api/admin/hospitals/${id}/approve`, {
+    apiCall<any>(`/admin/hospitals/${id}/approve`, {
       method: 'PUT',
     }),
   rejectHospital: (id: string) =>
-    apiCall<any>(`/api/admin/hospitals/${id}/reject`, {
+    apiCall<any>(`/admin/hospitals/${id}/reject`, {
       method: 'PUT',
     }),
   deleteHospital: (id: string) =>
-    apiCall<void>(`/api/admin/hospitals/${id}`, {
+    apiCall<void>(`/admin/hospitals/${id}`, {
       method: 'DELETE',
     }),
 
   // Appointment management
-  getAllAppointments: () => apiCall<any[]>('/api/admin/appointments'),
-  getAppointmentById: (id: string) => apiCall<any>(`/api/admin/appointments/${id}`),
+  getAllAppointments: () => apiCall<any[]>('/admin/appointments'),
+  getAppointmentById: (id: string) => apiCall<any>(`/admin/appointments/${id}`),
   updateAppointment: (id: string, appointment: any) =>
-    apiCall<any>(`/api/admin/appointments/${id}`, {
+    apiCall<any>(`/admin/appointments/${id}`, {
       method: 'PUT',
       body: JSON.stringify(appointment),
     }),
   cancelAppointment: (id: string) =>
-    apiCall<any>(`/api/admin/appointments/${id}/cancel`, {
+    apiCall<any>(`/admin/appointments/${id}/cancel`, {
       method: 'PUT',
     }),
   completeAppointment: (id: string) =>
-    apiCall<any>(`/api/admin/appointments/${id}/complete`, {
+    apiCall<any>(`/admin/appointments/${id}/complete`, {
       method: 'PUT',
     }),
   confirmAppointment: (id: string) =>
-    apiCall<any>(`/api/admin/appointments/${id}/confirm`, {
+    apiCall<any>(`/admin/appointments/${id}/confirm`, {
       method: 'PUT',
     }),
   deleteAppointment: (id: string) =>
-    apiCall<void>(`/api/admin/appointments/${id}`, {
+    apiCall<void>(`/admin/appointments/${id}`, {
       method: 'DELETE',
     }),
 
   // Pending approvals
-  getPendingDoctors: () => apiCall<any[]>('/api/admin/pending/doctors'),
-  getPendingHospitals: () => apiCall<any[]>('/api/admin/pending/hospitals'),
+  getPendingDoctors: () => apiCall<any[]>('/admin/pending/doctors'),
+  getPendingHospitals: () => apiCall<any[]>('/admin/pending/hospitals'),
 };
-
-
 
 // Pharmacy API
 export const pharmacyAPI = {
-  getMedicines: () => apiCall<any[]>('/api/medicines'),
-  getOrders: () => apiCall<any[]>('/api/orders'),
-  getPrescriptions: () => apiCall<any[]>('/api/prescriptions'),
+  getMedicines: () => apiCall<any[]>('/medicines'),
+  getOrders: () => apiCall<any[]>('/orders'),
+  getPrescriptions: () => apiCall<any[]>('/prescriptions'),
+  getPrescriptionById: (id: string) => apiCall<any>(`/prescriptions/${id}`),
+  acceptPrescription: (id: string) =>
+    apiCall<any>(`/prescriptions/${id}/accept`, {
+      method: 'PUT',
+    }),
+  denyPrescription: (id: string) =>
+    apiCall<any>(`/prescriptions/${id}/deny`, {
+      method: 'PUT',
+    }),
   addMedicine: (medicine: any) =>
-    apiCall<any>('/api/medicines', {
+    apiCall<any>('/medicines', {
       method: 'POST',
       body: JSON.stringify(medicine),
     }),
   updateMedicine: (id: string, medicine: any) =>
-    apiCall<any>(`/api/medicines/${id}`, {
+    apiCall<any>(`/medicines/${id}`, {
       method: 'PUT',
       body: JSON.stringify(medicine),
     }),
   deleteMedicine: (id: string) =>
-    apiCall<void>(`/api/medicines/${id}`, {
+    apiCall<void>(`/medicines/${id}`, {
       method: 'DELETE',
     }),
   updateOrderStatus: (id: string, status: string) =>
-    apiCall<any>(`/api/orders/${id}/status`, {
+    apiCall<any>(`/orders/${id}/status`, {
       method: 'PUT',
       body: JSON.stringify({ status }),
     }),

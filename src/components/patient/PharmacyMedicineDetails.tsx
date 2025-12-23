@@ -149,92 +149,100 @@ export const PharmacyMedicineDetails: React.FC<PharmacyMedicineDetailsProps> = (
     : 0;
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-7xl mx-auto space-y-8 p-4">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" onClick={() => onNavigate('/patient/pharmacy/medicine')}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Medicines
-        </Button>
-        <div className="flex items-center gap-2">
-          <Badge variant="secondary" className="px-3 py-1">
-            <ShoppingCart className="h-4 w-4 mr-2" />
-            {cartItemCount} items in cart
-          </Badge>
+      <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 rounded-3xl p-6 shadow-xl border border-blue-100/50">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" onClick={() => onNavigate('/patient/pharmacy/medicine')} className="hover:bg-blue-100 rounded-2xl p-3">
+            <ArrowLeft className="h-5 w-5 mr-2" />
+            Back to Medicines
+          </Button>
+          <div className="flex items-center gap-2 ml-auto">
+            <Badge variant="secondary" className="px-4 py-2 bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 border-blue-200 shadow-md rounded-full">
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              {cartItemCount} items in cart
+            </Badge>
+          </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Medicine Image & Basic Info */}
-        <Card>
-          <CardContent className="p-6">
-            <div className="aspect-square bg-gray-100 rounded-lg mb-6 flex items-center justify-center overflow-hidden">
+        <Card className="rounded-3xl shadow-lg border-0 bg-gradient-to-br from-white to-blue-50/50">
+          <CardContent className="p-8">
+            <div className="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl mb-6 flex items-center justify-center overflow-hidden shadow-md">
               {medicine.imageUrl ? (
                 <img
                   src={medicine.imageUrl}
                   alt={medicine.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover rounded-2xl group-hover:scale-105 transition-transform duration-300"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.style.display = 'none';
                     const parent = target.parentElement;
                     if (parent) {
-                      parent.innerHTML = '<div class="flex items-center justify-center w-full h-full"><svg class="h-24 w-24 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg></div>';
+                      parent.innerHTML = '<div class="flex items-center justify-center w-full h-full bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl"><Pill class="h-24 w-24 text-blue-500" /></div>';
                     }
                   }}
                 />
               ) : (
-                <Pill className="h-24 w-24 text-gray-400" />
+                <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl">
+                  <Pill className="h-24 w-24 text-blue-500" />
+                </div>
               )}
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">{medicine.name}</h1>
-                <p className="text-gray-600">{medicine.description}</p>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">{medicine.name}</h1>
+                <p className="text-gray-600 text-lg leading-relaxed">{medicine.description}</p>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3 p-3 bg-yellow-50 rounded-2xl">
                 <div className="flex items-center gap-1">
                   {renderStars(Math.round(averageRating))}
-                  <span className="text-sm text-gray-600 ml-2">
-                    {averageRating.toFixed(1)} ({reviews.length} reviews)
-                  </span>
                 </div>
+                <span className="text-sm text-gray-700 font-medium ml-2">
+                  {averageRating.toFixed(1)} ({reviews.length} reviews)
+                </span>
               </div>
 
-              <div className="flex items-center justify-between">
-                <span className="text-3xl font-bold text-blue-600">
+              <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl">
+                <span className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
                   ₹{medicine.price.toFixed(2)}
                 </span>
-                <Badge variant={medicine.stockQuantity > 0 ? "secondary" : "destructive"}>
+                <Badge variant={medicine.stockQuantity > 0 ? "secondary" : "destructive"} className={`px-4 py-2 rounded-full font-semibold shadow-lg ${
+                  medicine.stockQuantity > 0
+                    ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border-green-200'
+                    : 'bg-gradient-to-r from-red-100 to-rose-100 text-red-800 border-red-200'
+                }`}>
                   {medicine.stockQuantity > 0 ? `${medicine.stockQuantity} in stock` : 'Out of stock'}
                 </Badge>
               </div>
 
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="text-gray-600">Form</p>
-                  <p className="font-medium">{medicine.dosageForm}</p>
+                <div className="p-4 bg-blue-50 rounded-2xl">
+                  <p className="text-gray-600 mb-1">Form</p>
+                  <p className="font-semibold text-blue-700 flex items-center gap-2"><Pill className="h-4 w-4" /> {medicine.dosageForm}</p>
                 </div>
-                <div>
-                  <p className="text-gray-600">Strength</p>
-                  <p className="font-medium">{medicine.strength}</p>
+                <div className="p-4 bg-indigo-50 rounded-2xl">
+                  <p className="text-gray-600 mb-1">Strength</p>
+                  <p className="font-semibold text-indigo-700">{medicine.strength}</p>
                 </div>
-                <div>
-                  <p className="text-gray-600">Manufacturer</p>
-                  <p className="font-medium">{medicine.manufacturer}</p>
+                <div className="p-4 bg-purple-50 rounded-2xl">
+                  <p className="text-gray-600 mb-1">Manufacturer</p>
+                  <p className="font-semibold text-purple-700">{medicine.manufacturer}</p>
                 </div>
-                <div>
-                  <p className="text-gray-600">Category</p>
-                  <p className="font-medium">{medicine.category || 'General'}</p>
+                <div className="p-4 bg-gray-50 rounded-2xl">
+                  <p className="text-gray-600 mb-1">Category</p>
+                  <p className="font-semibold text-gray-700">{medicine.category || 'General'}</p>
                 </div>
               </div>
 
               {medicine.prescriptionRequired === 'YES' && (
-                <Alert>
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertDescription>
+                <Alert className="bg-gradient-to-r from-orange-50 to-red-50 border-orange-200 rounded-2xl p-4 shadow-inner">
+                  <AlertTriangle className="h-4 w-4 text-orange-600" />
+                  <AlertDescription className="text-orange-800">
                     Prescription required for this medicine
                   </AlertDescription>
                 </Alert>
@@ -244,31 +252,33 @@ export const PharmacyMedicineDetails: React.FC<PharmacyMedicineDetailsProps> = (
         </Card>
 
         {/* Purchase Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Add to Cart</CardTitle>
+        <Card className="rounded-3xl shadow-lg border-0 bg-gradient-to-br from-white to-purple-50/50">
+          <CardHeader className="p-6">
+            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Add to Cart</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
+          <CardContent className="p-6 space-y-6">
+            <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl">
+              <div className="flex items-center gap-3 bg-white rounded-full p-2 shadow-sm">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="h-10 w-10 rounded-full border-2 border-blue-200 hover:border-blue-300 hover:bg-blue-50"
                 >
                   <Minus className="h-4 w-4" />
                 </Button>
-                <span className="w-12 text-center font-medium">{quantity}</span>
+                <span className="w-12 text-center font-bold text-lg text-gray-900">{quantity}</span>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setQuantity(Math.min(medicine.stockQuantity, quantity + 1))}
                   disabled={quantity >= medicine.stockQuantity}
+                  className="h-10 w-10 rounded-full border-2 border-blue-200 hover:border-blue-300 hover:bg-blue-50 disabled:opacity-50"
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-gray-600 font-medium">
                 Max: {medicine.stockQuantity}
               </span>
             </div>
@@ -277,7 +287,7 @@ export const PharmacyMedicineDetails: React.FC<PharmacyMedicineDetailsProps> = (
               <Button
                 onClick={handleAddToCart}
                 disabled={medicine.stockQuantity === 0}
-                className="flex-1"
+                className="flex-1 h-12 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-lg transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none rounded-2xl font-semibold text-white"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add to Cart - ₹{(medicine.price * quantity).toFixed(2)}
@@ -285,171 +295,154 @@ export const PharmacyMedicineDetails: React.FC<PharmacyMedicineDetailsProps> = (
               <Button
                 variant="outline"
                 onClick={toggleWishlist}
-                className={isWishlisted ? 'text-red-600' : ''}
+                className={`h-12 px-4 rounded-2xl border-2 border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all ${isWishlisted ? 'text-red-600 border-red-200 bg-red-50' : ''}`}
               >
                 <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-current' : ''}`} />
               </Button>
-              <Button variant="outline">
-                <Share2 className="h-4 w-4" />
-              </Button>
-            </div>
-
-            <div className="space-y-2 text-sm text-gray-600">
-              <div className="flex items-center gap-2">
-                <Truck className="h-4 w-4" />
-                <span>Free delivery on orders above ₹500</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Shield className="h-4 w-4" />
-                <span>100% genuine medicines</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4" />
-                <span>Usually delivered in 2-3 days</span>
-              </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Detailed Information Tabs */}
-      <Card>
-        <CardContent className="p-0">
-          <div className="border-b">
-            <nav className="flex">
-              {[
-                { id: 'overview', label: 'Overview' },
-                { id: 'usage', label: 'Usage & Dosage' },
-                { id: 'side-effects', label: 'Side Effects' },
-                { id: 'reviews', label: 'Reviews' }
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
-                    activeTab === tab.id
-                      ? 'border-blue-600 text-blue-600'
-                      : 'border-transparent text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </nav>
+      {/* Tabs Section */}
+      <Card className="rounded-3xl shadow-lg border-0 bg-gradient-to-br from-white to-gray-50/50">
+        <CardContent className="p-8">
+          <div className="flex gap-4 mb-6 border-b border-gray-200">
+            {['overview', 'reviews', 'usage'].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-6 py-3 rounded-2xl font-semibold transition-all duration-300 ${
+                  activeTab === tab
+                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg transform scale-105'
+                    : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+                }`}
+              >
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </button>
+            ))}
           </div>
 
-          <div className="p-6">
-            {activeTab === 'overview' && (
-              <div className="space-y-4">
+          {activeTab === 'overview' && (
+            <div className="space-y-6">
+              {medicine.usageInstructions && (
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">Description</h3>
-                  <p className="text-gray-600">{medicine.description}</p>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+                    <Info className="h-5 w-5 text-blue-600" />
+                    Usage Instructions
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed bg-blue-50 p-4 rounded-2xl">{medicine.usageInstructions}</p>
                 </div>
+              )}
 
-                {medicine.usageInstructions && (
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2">Usage Instructions</h3>
-                    <p className="text-gray-600">{medicine.usageInstructions}</p>
-                  </div>
-                )}
-
-                {medicine.storageInstructions && (
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2">Storage Instructions</h3>
-                    <p className="text-gray-600">{medicine.storageInstructions}</p>
-                  </div>
-                )}
-
-                {medicine.expiryDate && (
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2">Expiry Date</h3>
-                    <p className="text-gray-600">{medicine.expiryDate}</p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {activeTab === 'usage' && (
-              <div className="space-y-4">
+              {medicine.sideEffects && (
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">How to Use</h3>
-                  <p className="text-gray-600">
-                    {medicine.usageInstructions || 'Usage instructions not available. Please consult your doctor or pharmacist.'}
-                  </p>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5 text-orange-600" />
+                    Side Effects
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed bg-orange-50 p-4 rounded-2xl">{medicine.sideEffects}</p>
                 </div>
+              )}
 
-                <Alert>
-                  <Info className="h-4 w-4" />
-                  <AlertDescription>
-                    Always follow your doctor's instructions for dosage and usage. Do not exceed recommended dosage.
-                  </AlertDescription>
-                </Alert>
-              </div>
-            )}
-
-            {activeTab === 'side-effects' && (
-              <div className="space-y-4">
+              {medicine.warnings && (
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">Possible Side Effects</h3>
-                  <p className="text-gray-600">
-                    {medicine.sideEffects || 'Side effects information not available. Please consult your doctor for detailed information.'}
-                  </p>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+                    <Shield className="h-5 w-5 text-red-600" />
+                    Warnings
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed bg-red-50 p-4 rounded-2xl">{medicine.warnings}</p>
                 </div>
+              )}
 
-                {medicine.warnings && (
-                  <Alert>
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertDescription>
-                      {medicine.warnings}
-                    </AlertDescription>
-                  </Alert>
-                )}
+              {medicine.storageInstructions && (
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+                    <Truck className="h-5 w-5 text-green-600" />
+                    Storage Instructions
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed bg-green-50 p-4 rounded-2xl">{medicine.storageInstructions}</p>
+                </div>
+              )}
 
-                <Alert>
-                  <Info className="h-4 w-4" />
-                  <AlertDescription>
-                    If you experience any unusual symptoms, stop taking the medication and consult your doctor immediately.
-                  </AlertDescription>
-                </Alert>
+              {medicine.expiryDate && (
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+                    <Clock className="h-5 w-5 text-purple-600" />
+                    Expiry Date
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed bg-purple-50 p-4 rounded-2xl">{medicine.expiryDate}</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'reviews' && (
+            <div className="space-y-6">
+              <div className="flex items-center gap-4 mb-6">
+                <h3 className="text-2xl font-bold text-gray-900">Customer Reviews</h3>
+                <Badge variant="secondary" className="px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 rounded-full">
+                  {reviews.length} reviews
+                </Badge>
               </div>
-            )}
 
-            {activeTab === 'reviews' && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold">Customer Reviews</h3>
-                  <Button variant="outline" size="sm">
-                    Write a Review
-                  </Button>
-                </div>
-
-                {reviews.length === 0 ? (
-                  <p className="text-gray-600">No reviews yet. Be the first to review this medicine!</p>
-                ) : (
-                  <div className="space-y-4">
-                    {reviews.map((review) => (
-                      <div key={review.id} className="border-b pb-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">{review.userName}</span>
-                            <div className="flex items-center gap-1">
-                              {renderStars(review.rating)}
-                            </div>
+              {reviews.length > 0 ? (
+                <div className="space-y-4">
+                  {reviews.map((review) => (
+                    <Card key={review.id} className="rounded-2xl shadow-md border-0 bg-gradient-to-r from-white to-gray-50">
+                      <CardContent className="p-6">
+                        <div className="flex items-start gap-4">
+                          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                            {review.userName.charAt(0).toUpperCase()}
                           </div>
-                          <span className="text-sm text-gray-600">
-                            {new Date(review.createdAt).toLocaleDateString()}
-                          </span>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <span className="font-semibold text-gray-900">{review.userName}</span>
+                              <div className="flex items-center gap-1">
+                                {renderStars(review.rating)}
+                              </div>
+                              <span className="text-sm text-gray-500">{review.createdAt}</span>
+                            </div>
+                            <p className="text-gray-700 leading-relaxed">{review.comment}</p>
+                          </div>
                         </div>
-                        <p className="text-gray-600">{review.comment}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <Star className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No reviews yet</h3>
+                  <p className="text-gray-600">Be the first to review this medicine</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'usage' && (
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">How to Use</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="rounded-2xl shadow-md border-0 bg-gradient-to-br from-blue-50 to-indigo-50">
+                  <CardContent className="p-6">
+                    <h4 className="font-semibold text-blue-900 mb-3">Dosage</h4>
+                    <p className="text-blue-700">{medicine.strength}</p>
+                  </CardContent>
+                </Card>
+                <Card className="rounded-2xl shadow-md border-0 bg-gradient-to-br from-green-50 to-emerald-50">
+                  <CardContent className="p-6">
+                    <h4 className="font-semibold text-green-900 mb-3">Form</h4>
+                    <p className="text-green-700">{medicine.dosageForm}</p>
+                  </CardContent>
+                </Card>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
   );
 };
+
+export default PharmacyMedicineDetails;

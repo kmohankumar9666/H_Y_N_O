@@ -8,6 +8,8 @@ import com.hyno.entity.Appointment;
 import com.hyno.entity.ChatRoom;
 import com.hyno.entity.ChatMessage;
 import com.hyno.entity.Medicine;
+import com.hyno.entity.Order;
+import com.hyno.entity.OrderItem;
 import com.hyno.repository.AdminRepository;
 import com.hyno.repository.PatientRepository;
 import com.hyno.repository.DoctorRepository;
@@ -16,6 +18,9 @@ import com.hyno.repository.AppointmentRepository;
 import com.hyno.repository.ChatRoomRepository;
 import com.hyno.repository.ChatMessageRepository;
 import com.hyno.repository.MedicineRepository;
+import com.hyno.repository.OrderRepository;
+import com.hyno.entity.Prescription;
+import com.hyno.repository.PrescriptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -23,6 +28,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,6 +58,12 @@ public class DataInitializer implements CommandLineRunner {
 
     @Autowired
     private MedicineRepository medicineRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private PrescriptionRepository prescriptionRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -280,7 +292,7 @@ public class DataInitializer implements CommandLineRunner {
             admin.setName("Admin User");
             admin.setEmail("admin@example.com");
             admin.setPhone("5555555555");
-            admin.setPassword("admin123");
+            admin.setPassword("password123");
             admin.setRole(Admin.AdminRole.SUPER_ADMIN);
             adminRepository.save(admin);
         }
@@ -356,6 +368,60 @@ public class DataInitializer implements CommandLineRunner {
                 chatRoom.setLastMessage("That's great to hear! Please continue taking the prescribed medication.");
                 chatRoom.setLastMessageTime(message3.getCreatedAt());
                 chatRoomRepository.save(chatRoom);
+            }
+        }
+
+        // Create sample prescriptions
+        if (prescriptionRepository.count() == 0) {
+            Optional<Patient> patient1 = patientRepository.findById("1");
+            Optional<Doctor> doctor1 = doctorRepository.findById("1");
+            Optional<Patient> patient2 = patientRepository.findById("patient-2");
+            Optional<Doctor> doctor2 = doctorRepository.findById("doctor-2");
+
+            if (patient1.isPresent() && doctor1.isPresent()) {
+                Prescription prescription1 = new Prescription();
+                prescription1.setId("prescription-1");
+                prescription1.setPatientId(patient1.get().getId());
+                prescription1.setPatientName(patient1.get().getName());
+                prescription1.setDoctorId(doctor1.get().getId());
+                prescription1.setDoctorName(doctor1.get().getName());
+                prescription1.setFilePath("/uploads/prescriptions/sample-prescription-1.pdf");
+                prescription1.setMedicines("Paracetamol 500mg - 2 tablets daily, Ibuprofen 200mg - as needed for pain");
+                prescription1.setNotes("Follow up in 2 weeks. Monitor blood pressure.");
+                prescription1.setStatus(Prescription.PrescriptionStatus.PENDING);
+                prescription1.setCreatedAt(LocalDateTime.now().minusDays(3));
+                prescriptionRepository.save(prescription1);
+            }
+
+            if (patient2.isPresent() && doctor2.isPresent()) {
+                Prescription prescription2 = new Prescription();
+                prescription2.setId("prescription-2");
+                prescription2.setPatientId(patient2.get().getId());
+                prescription2.setPatientName(patient2.get().getName());
+                prescription2.setDoctorId(doctor2.get().getId());
+                prescription2.setDoctorName(doctor2.get().getName());
+                prescription2.setFilePath("/uploads/prescriptions/sample-prescription-2.jpg");
+                prescription2.setMedicines("Amoxicillin 500mg - 1 capsule 3 times daily for 7 days");
+                prescription2.setNotes("Complete full course of antibiotics. Return if symptoms persist.");
+                prescription2.setStatus(Prescription.PrescriptionStatus.APPROVED);
+                prescription2.setCreatedAt(LocalDateTime.now().minusDays(1));
+                prescriptionRepository.save(prescription2);
+            }
+
+            // Third prescription - denied
+            if (patient1.isPresent() && doctor1.isPresent()) {
+                Prescription prescription3 = new Prescription();
+                prescription3.setId("prescription-3");
+                prescription3.setPatientId(patient1.get().getId());
+                prescription3.setPatientName(patient1.get().getName());
+                prescription3.setDoctorId(doctor1.get().getId());
+                prescription3.setDoctorName(doctor1.get().getName());
+                prescription3.setFilePath("/uploads/prescriptions/sample-prescription-3.png");
+                prescription3.setMedicines("Vitamin D3 1000 IU - 1 tablet daily");
+                prescription3.setNotes("For vitamin deficiency. No known allergies.");
+                prescription3.setStatus(Prescription.PrescriptionStatus.DENIED);
+                prescription3.setCreatedAt(LocalDateTime.now());
+                prescriptionRepository.save(prescription3);
             }
         }
 
@@ -512,6 +578,78 @@ public class DataInitializer implements CommandLineRunner {
             medicine5.setPrescriptionRequired("NO");
             medicine5.setStatus("ACTIVE");
             medicineRepository.save(medicine5);
+
+            // Create sample orders for all patients
+            if (orderRepository.count() == 0) {
+                // List of all sample patient IDs
+                List<String> patientIds = List.of("1", "patient-2", "patient-3", "patient-4", "patient-5");
+                List<Order.OrderStatus> statuses = List.of(
+                    Order.OrderStatus.pending,
+                    Order.OrderStatus.confirmed,
+                    Order.OrderStatus.shipped,
+                    Order.OrderStatus.delivered
+                );
+
+                int orderCounter = 1;
+
+                for (String patientId : patientIds) {
+                    Optional<Patient> patientOpt = patientRepository.findById(patientId);
+                    if (patientOpt.isPresent()) {
+                        Patient patient = patientOpt.get();
+
+                        // Create 1-2 orders per patient with different combinations
+                        int numOrders = (patientId.equals("1")) ? 2 : 1; // Patient 1 gets 2 orders, others get 1
+
+                        for (int i = 0; i < numOrders; i++) {
+                            Order order = new Order();
+                            order.setId("order-" + orderCounter);
+                            order.setPatientId(patientId);
+                            order.setPatientName(patient.getName());
+
+                            List<OrderItem> items = new ArrayList<>();
+
+                            if (i == 0) {
+                                // First order: Multiple items
+                                OrderItem item1 = new OrderItem("medicine-1", "Paracetamol", 2, BigDecimal.valueOf(25.50));
+                                item1.setOrder(order);
+                                items.add(item1);
+
+                                OrderItem item2 = new OrderItem("medicine-3", "Ibuprofen", 1, BigDecimal.valueOf(18.75));
+                                item2.setOrder(order);
+                                items.add(item2);
+
+                                order.setTotalAmount(BigDecimal.valueOf(69.75)); // 2*25.50 + 18.75
+                            } else {
+                                // Second order: Single item
+                                OrderItem item = new OrderItem("medicine-2", "Amoxicillin", 1, BigDecimal.valueOf(45.00));
+                                item.setOrder(order);
+                                items.add(item);
+
+                                order.setTotalAmount(BigDecimal.valueOf(45.00));
+                            }
+
+                            order.setOrderItems(items);
+                            order.setPaymentMethod(i == 0 ? "Online" : "Cash");
+
+                            // Create delivery address JSON
+                            String deliveryAddress = String.format(
+                                "{\"name\":\"%s\",\"phone\":\"%s\",\"email\":\"%s\",\"street\":\"123 Main St\",\"city\":\"City\",\"state\":\"State\",\"pincode\":\"12345\"}",
+                                patient.getName(),
+                                patient.getPhone() != null ? patient.getPhone() : "1234567890",
+                                patient.getEmail()
+                            );
+                            order.setDeliveryAddress(deliveryAddress);
+
+                            // Assign different statuses to different patients
+                            int statusIndex = (orderCounter - 1) % statuses.size();
+                            order.setStatus(statuses.get(statusIndex));
+
+                            orderRepository.save(order);
+                            orderCounter++;
+                        }
+                    }
+                }
+            }
         }
     }
 }

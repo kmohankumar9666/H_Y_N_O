@@ -1,0 +1,15 @@
+
+  "patientId": "test-patient",
+  "patientName": "Test Patient",
+  "orderItems": [
+    {
+      "medicineId": "test-med",
+      "medicineName": "Test Medicine",
+      "quantity": 1,
+      "price": 10.00
+    }
+  ],
+  "totalAmount": 10.00,
+  "paymentMethod": "cod",
+  "deliveryAddress": "{\"name\":\"Test\",\"phone\":\"1234567890\",\"email\":\"test@example.com\",\"street\":\"123 Main St\",\"city\":\"City\",\"state\":\"State\",\"pincode\":\"12345\"}"
+}

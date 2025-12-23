@@ -94,24 +94,32 @@ export const PharmacyWishlist: React.FC<PharmacyWishlistProps> = ({
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={() => onNavigate('/patient/pharmacy')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Pharmacy
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">My Wishlist</h1>
-            <p className="text-gray-600">Medicines you've saved for later</p>
+    <div className="space-y-8">
+      {/* Enhanced Header with Gradient */}
+      <div className="bg-gradient-to-r from-pink-50 via-red-50 to-purple-50 rounded-2xl p-6 border border-pink-100">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              onClick={() => onNavigate('/patient/pharmacy')}
+              className="bg-white/50 hover:bg-white/80 border border-pink-200 rounded-xl"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Pharmacy
+            </Button>
+            <div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                My Wishlist
+              </h1>
+              <p className="text-gray-600 text-lg">Medicines you've saved for later</p>
+            </div>
           </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <Badge variant="secondary" className="px-3 py-1">
-            <ShoppingCart className="h-4 w-4 mr-2" />
-            {cartItemCount} items in cart
-          </Badge>
+          <div className="flex items-center gap-4">
+            <Badge variant="secondary" className="px-4 py-2 text-sm bg-pink-100 text-pink-800 border-pink-200 rounded-xl">
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              {cartItemCount} items in cart
+            </Badge>
+          </div>
         </div>
       </div>
 

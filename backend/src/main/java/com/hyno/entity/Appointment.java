@@ -90,6 +90,6 @@ public class Appointment {
     }
 
     public enum AppointmentStatus {
-        PENDING, UPCOMING, COMPLETED, CANCELLED
+        PENDING, UPCOMING, COMPLETED, CANCELLED, PRESCRIPTION_APPROVED, PRESCRIPTION_DENIED
     }
 }

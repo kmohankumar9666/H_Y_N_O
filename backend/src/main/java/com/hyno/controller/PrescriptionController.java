@@ -86,14 +86,15 @@ public class PrescriptionController {
 
             // Create prescription entity
             Prescription prescription = new Prescription();
+            prescription.setId(UUID.randomUUID().toString());
             prescription.setPatientId(patientId);
             prescription.setPatientName(patientName);
             prescription.setDoctorId(doctorId);
             prescription.setDoctorName(doctorName);
-            prescription.setMedicines(medicines);
+            prescription.setMedicines(String.join(", ", medicines));
             prescription.setNotes(notes);
-            prescription.setFileUrl("/uploads/prescriptions/" + fileName);
-            prescription.setStatus("PENDING");
+            prescription.setFilePath("/uploads/prescriptions/" + fileName);
+            prescription.setStatus(Prescription.PrescriptionStatus.PENDING);
 
             Prescription savedPrescription = prescriptionService.createPrescription(prescription);
             return ResponseEntity.ok(savedPrescription);

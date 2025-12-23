@@ -15,6 +15,7 @@ com\hyno\controller\WebSocketChatController$ReadNotification.class
 com\hyno\controller\DoctorScheduleController.class
 com\hyno\controller\WebSocketChatController$TypingRequest.class
 com\hyno\entity\Appointment$AppointmentType.class
+com\hyno\controller\PharmacyController$PrescriptionDTO.class
 com\hyno\entity\DoctorSchedule.class
 com\hyno\controller\WebSocketVideoCallController$LeaveCallRequest.class
 com\hyno\entity\Hospital.class
@@ -49,6 +50,7 @@ com\hyno\service\YogaVideoService.class
 com\hyno\entity\Appointment.class
 com\hyno\entity\ScheduleSlot.class
 com\hyno\config\WebSocketConfig.class
+com\hyno\controller\PharmacyController.class
 com\hyno\controller\WebSocketVideoCallController$IceCandidate.class
 com\hyno\service\PatientService.class
 com\hyno\controller\VideoCallController.class
@@ -74,12 +76,13 @@ com\hyno\entity\OrderItem.class
 com\hyno\entity\VideoCall.class
 com\hyno\entity\YogaTrainer.class
 com\hyno\entity\Feedback.class
+com\hyno\entity\Prescription$PrescriptionStatus.class
 com\hyno\repository\PaymentRepository.class
 com\hyno\repository\FeedbackRepository.class
 com\hyno\HynoApplication.class
 com\hyno\entity\ScheduleSlot$SlotStatus.class
 com\hyno\entity\PasswordResetToken.class
-com\hyno\config\CorsConfig.class
+CorsConfig.class
 com\hyno\controller\DoctorController.class
 com\hyno\controller\WebSocketVideoCallController$LeaveCallNotification.class
 com\hyno\entity\YogaSession$SessionMode.class
@@ -92,6 +95,7 @@ com\hyno\controller\HospitalController.class
 com\hyno\entity\Feedback$FeedbackType.class
 com\hyno\entity\Schedule$AppointmentType.class
 com\hyno\repository\YogaVideoRepository.class
+com\hyno\dto\OrderCreateDTO.class
 com\hyno\entity\Admin.class
 com\hyno\controller\AuthController.class
 com\hyno\service\VideoCallService.class
@@ -99,6 +103,7 @@ com\hyno\entity\YogaSession.class
 com\hyno\entity\Prescription.class
 com\hyno\config\GlobalExceptionHandler.class
 com\hyno\controller\WebSocketChatController$ChatMessageRequest.class
+com\hyno\dto\OrderCreateDTO$OrderItemDTO.class
 com\hyno\controller\WebSocketChatController$WebSocketMessageResponse.class
 com\hyno\controller\WebSocketVideoCallController.class
 com\hyno\entity\Payment$PaymentStatus.class

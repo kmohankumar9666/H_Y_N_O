@@ -6,5 +6,5 @@ window.__ENV__ = {
   REACT_APP_USE_BACKEND: 'true',
 
   // Backend API URL (only used when USE_BACKEND is true)
-  REACT_APP_API_URL: 'http://localhost:8081/api'
+  REACT_APP_API_URL: 'http://localhost:8083/api'
 };

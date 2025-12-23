@@ -13,7 +13,5 @@ public interface PrescriptionRepository extends JpaRepository<Prescription, Stri
 
     List<Prescription> findByDoctorId(String doctorId);
 
-    List<Prescription> findByStatus(String status);
-
-    List<Prescription> findByPatientIdAndStatus(String patientId, String status);
+    List<Prescription> findByStatus(Prescription.PrescriptionStatus status);
 }

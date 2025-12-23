@@ -14,16 +14,46 @@ public class PrescriptionService {
     @Autowired
     private PrescriptionRepository prescriptionRepository;
 
-    public List<Prescription> getAllPrescriptions() {
+    public Prescription save(Prescription prescription) {
+        return prescriptionRepository.save(prescription);
+    }
+
+    public List<Prescription> findAll() {
         return prescriptionRepository.findAll();
     }
 
-    public Optional<Prescription> getPrescriptionById(String id) {
+    public Optional<Prescription> findById(String id) {
         return prescriptionRepository.findById(id);
     }
 
-    public List<Prescription> getPrescriptionsByPatientId(String patientId) {
+    public List<Prescription> findByPatientId(String patientId) {
         return prescriptionRepository.findByPatientId(patientId);
+    }
+
+    public List<Prescription> findByStatus(Prescription.PrescriptionStatus status) {
+        return prescriptionRepository.findByStatus(status);
+    }
+
+    public Prescription updateStatus(String id, Prescription.PrescriptionStatus status) {
+        Optional<Prescription> optionalPrescription = prescriptionRepository.findById(id);
+        if (optionalPrescription.isPresent()) {
+            Prescription prescription = optionalPrescription.get();
+            prescription.setStatus(status);
+            return prescriptionRepository.save(prescription);
+        }
+        throw new RuntimeException("Prescription not found");
+    }
+
+    public List<Prescription> getAllPrescriptions() {
+        return findAll();
+    }
+
+    public Optional<Prescription> getPrescriptionById(String id) {
+        return findById(id);
+    }
+
+    public List<Prescription> getPrescriptionsByPatientId(String patientId) {
+        return findByPatientId(patientId);
     }
 
     public List<Prescription> getPrescriptionsByDoctorId(String doctorId) {
@@ -31,21 +61,17 @@ public class PrescriptionService {
     }
 
     public List<Prescription> getPrescriptionsByStatus(String status) {
-        return prescriptionRepository.findByStatus(status);
+        Prescription.PrescriptionStatus prescriptionStatus = Prescription.PrescriptionStatus.valueOf(status.toUpperCase());
+        return findByStatus(prescriptionStatus);
     }
 
     public Prescription createPrescription(Prescription prescription) {
-        return prescriptionRepository.save(prescription);
+        return save(prescription);
     }
 
     public Prescription updatePrescriptionStatus(String id, String status) {
-        Optional<Prescription> optionalPrescription = prescriptionRepository.findById(id);
-        if (optionalPrescription.isPresent()) {
-            Prescription prescription = optionalPrescription.get();
-            prescription.setStatus(status);
-            return prescriptionRepository.save(prescription);
-        }
-        return null;
+        Prescription.PrescriptionStatus prescriptionStatus = Prescription.PrescriptionStatus.valueOf(status.toUpperCase());
+        return updateStatus(id, prescriptionStatus);
     }
 
     public boolean deletePrescription(String id) {

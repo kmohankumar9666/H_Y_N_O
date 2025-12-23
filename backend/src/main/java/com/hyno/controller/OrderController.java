@@ -1,5 +1,6 @@
 package com.hyno.controller;
 
+import com.hyno.dto.OrderCreateDTO;
 import com.hyno.entity.Order;
 import com.hyno.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/orders")
 @CrossOrigin(origins = "*")
 public class OrderController {
 
@@ -22,9 +23,9 @@ public class OrderController {
 
     // Create a new order
     @PostMapping
-    public ResponseEntity<?> createOrder(@RequestBody Order order) {
+    public ResponseEntity<?> createOrder(@RequestBody OrderCreateDTO orderDTO) {
         try {
-            Order createdOrder = orderService.createOrder(order);
+            Order createdOrder = orderService.createOrderFromDTO(orderDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdOrder);
         } catch (Exception e) {
             Map<String, String> error = new HashMap<>();

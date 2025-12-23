@@ -2,8 +2,8 @@ package com.hyno.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "prescriptions")
@@ -11,37 +11,35 @@ import java.util.List;
 public class Prescription {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(nullable = false)
+    @Column(name = "patient_id", nullable = false)
     private String patientId;
 
-    @Column(nullable = false, length = 200)
+    @Column(name = "patient_name", nullable = false)
     private String patientName;
 
-    @Column(nullable = false)
+    @Column(name = "doctor_id", nullable = false)
     private String doctorId;
 
-    @Column(nullable = false, length = 200)
+    @Column(name = "doctor_name", nullable = false)
     private String doctorName;
 
+    @Column(name = "file_path", nullable = false)
+    private String filePath;
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private LocalDateTime date = LocalDateTime.now();
+    private PrescriptionStatus status = PrescriptionStatus.PENDING;
 
-    @Column(nullable = false, length = 50)
-    private String status = "PENDING"; // PENDING, APPROVED, REJECTED, FILLED
-
-    @ElementCollection
-    @CollectionTable(name = "prescription_medicines", joinColumns = @JoinColumn(name = "prescription_id"))
-    @Column(name = "medicine_name")
-    private List<String> medicines;
+    @Column(length = 2000)
+    private String medicines; // JSON string of medicines array
 
     @Column(length = 1000)
     private String notes;
 
-    @Column(length = 500)
-    private String fileUrl; // for uploaded prescription files
+    @Column(name = "date", nullable = false)
+    private LocalDate date = LocalDate.now();
 
     @Column(updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -51,5 +49,9 @@ public class Prescription {
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public enum PrescriptionStatus {
+        PENDING, APPROVED, DENIED
     }
 }

@@ -41,11 +41,27 @@ interface Prescription {
   doctorName: string;
   date: string;
   status: string;
+  filePath?: string;
+}
+
+interface Order {
+  id: string;
+  patientId: string;
+  patientName: string;
+  orderDate: string;
+  totalAmount: number;
+  paymentMethod: string;
+  deliveryAddress: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  orderItems?: any[];
 }
 
 export const AdminPharmacy = () => {
   const [medicines, setMedicines] = useState<Medicine[]>([]);
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
 
   // Medicine Form State
   const [showMedicineForm, setShowMedicineForm] = useState(false);
@@ -53,22 +69,16 @@ export const AdminPharmacy = () => {
   const [medicineForm, setMedicineForm] = useState({
     name: '',
     genericName: '',
-    description: '',
-    manufacturer: '',
     dosageForm: '',
     strength: '',
-    indications: '',
-    contraindications: '',
-    sideEffects: '',
-    precautions: '',
-    interactions: '',
     category: '',
     price: '',
     stockQuantity: '',
     prescriptionRequired: '',
-    status: 'ACTIVE',
     imageUrl: '',
   });
+
+
 
   // Load data on component mount
   useEffect(() => {
@@ -76,19 +86,31 @@ export const AdminPharmacy = () => {
   }, []);
 
   const loadPharmacyData = async () => {
+    // Load medicines
     try {
-      // Load medicines
       const medicinesData = await api.pharmacy.getMedicines();
       setMedicines(medicinesData || []);
+    } catch (error) {
+      console.error('Failed to load medicines:', error);
+      setMedicines([]);
+    }
 
-      // Load prescriptions
+    // Load prescriptions
+    try {
       const prescriptionsData = await api.pharmacy.getPrescriptions();
       setPrescriptions(prescriptionsData || []);
     } catch (error) {
-      console.error('Failed to load pharmacy data:', error);
-      // Fallback to empty arrays
-      setMedicines([]);
+      console.error('Failed to load prescriptions:', error);
       setPrescriptions([]);
+    }
+
+    // Load orders
+    try {
+      const ordersData = await api.pharmacy.getOrders();
+      setOrders(ordersData || []);
+    } catch (error) {
+      console.error('Failed to load orders:', error);
+      setOrders([]);
     }
   };
 
@@ -102,20 +124,13 @@ export const AdminPharmacy = () => {
     const medicineData = {
       name: medicineForm.name,
       genericName: medicineForm.genericName,
-      description: medicineForm.description,
-      manufacturer: medicineForm.manufacturer,
       dosageForm: medicineForm.dosageForm,
       strength: medicineForm.strength,
-      indications: medicineForm.indications,
-      contraindications: medicineForm.contraindications,
-      sideEffects: medicineForm.sideEffects,
-      precautions: medicineForm.precautions,
-      interactions: medicineForm.interactions,
       category: medicineForm.category,
       price: parseFloat(medicineForm.price),
       stockQuantity: parseInt(medicineForm.stockQuantity),
       prescriptionRequired: medicineForm.prescriptionRequired,
-      status: medicineForm.status,
+      status: 'ACTIVE',
       imageUrl: medicineForm.imageUrl,
     };
 
@@ -138,29 +153,29 @@ export const AdminPharmacy = () => {
       return;
     }
 
-    const updatedMedicine: Medicine = {
-      ...editingMedicine,
+    const updatePayload = {
+      id: editingMedicine.id,
       name: medicineForm.name,
-      genericName: medicineForm.genericName,
-      description: medicineForm.description,
-      manufacturer: medicineForm.manufacturer,
-      dosageForm: medicineForm.dosageForm,
-      strength: medicineForm.strength,
-      indications: medicineForm.indications,
-      contraindications: medicineForm.contraindications,
-      sideEffects: medicineForm.sideEffects,
-      precautions: medicineForm.precautions,
-      interactions: medicineForm.interactions,
-      category: medicineForm.category,
+      genericName: medicineForm.genericName || null,
+      description: null,
+      manufacturer: null,
+      indications: null,
+      contraindications: null,
+      sideEffects: null,
+      precautions: null,
+      interactions: null,
+      dosageForm: medicineForm.dosageForm || null,
+      strength: medicineForm.strength || null,
+      category: medicineForm.category || null,
       price: parseFloat(medicineForm.price),
       stockQuantity: parseInt(medicineForm.stockQuantity),
-      prescriptionRequired: medicineForm.prescriptionRequired,
-      status: medicineForm.status,
-      imageUrl: medicineForm.imageUrl,
+      prescriptionRequired: medicineForm.prescriptionRequired || null,
+      status: 'ACTIVE' as const,
+      imageUrl: medicineForm.imageUrl || null,
     };
 
     try {
-      await api.pharmacy.updateMedicine(updatedMedicine.id, updatedMedicine);
+      await api.pharmacy.updateMedicine(editingMedicine.id, updatePayload);
       resetMedicineForm();
       toast.success('Medicine updated successfully');
       // Reload data to ensure consistency
@@ -172,6 +187,9 @@ export const AdminPharmacy = () => {
   };
 
   const handleDeleteMedicine = async (medicineId: string) => {
+    const confirmDelete = window.confirm('Are you sure you want to delete this medicine? This action cannot be undone.');
+    if (!confirmDelete) return;
+
     try {
       await api.pharmacy.deleteMedicine(medicineId);
       setMedicines(medicines.filter(med => med.id !== medicineId));
@@ -188,20 +206,12 @@ export const AdminPharmacy = () => {
     setMedicineForm({
       name: '',
       genericName: '',
-      description: '',
-      manufacturer: '',
       dosageForm: '',
       strength: '',
-      indications: '',
-      contraindications: '',
-      sideEffects: '',
-      precautions: '',
-      interactions: '',
       category: '',
       price: '',
       stockQuantity: '',
       prescriptionRequired: '',
-      status: 'ACTIVE',
       imageUrl: '',
     });
     setEditingMedicine(null);
@@ -213,24 +223,53 @@ export const AdminPharmacy = () => {
     setMedicineForm({
       name: medicine.name,
       genericName: medicine.genericName || '',
-      description: medicine.description || '',
-      manufacturer: medicine.manufacturer || '',
       dosageForm: medicine.dosageForm || '',
       strength: medicine.strength || '',
-      indications: medicine.indications || '',
-      contraindications: medicine.contraindications || '',
-      sideEffects: medicine.sideEffects || '',
-      precautions: medicine.precautions || '',
-      interactions: medicine.interactions || '',
       category: medicine.category || '',
       price: medicine.price.toString(),
       stockQuantity: medicine.stockQuantity.toString(),
       prescriptionRequired: medicine.prescriptionRequired || '',
-      status: medicine.status,
       imageUrl: medicine.imageUrl || '',
     });
     setShowMedicineForm(true);
   };
+
+  // Handle Prescription Actions
+  const handleAcceptPrescription = async (prescriptionId: string) => {
+    try {
+      await api.pharmacy.acceptPrescription(prescriptionId);
+      toast.success('Prescription accepted successfully');
+      await loadPharmacyData(); // Reload to update status
+    } catch (error) {
+      console.error('Failed to accept prescription:', error);
+      toast.error('Failed to accept prescription');
+    }
+  };
+
+  const handleDenyPrescription = async (prescriptionId: string) => {
+    try {
+      await api.pharmacy.denyPrescription(prescriptionId);
+      toast.success('Prescription denied successfully');
+      await loadPharmacyData(); // Reload to update status
+    } catch (error) {
+      console.error('Failed to deny prescription:', error);
+      toast.error('Failed to deny prescription');
+    }
+  };
+
+  // Handle Order Actions
+  const handleUpdateOrderStatus = async (orderId: string, newStatus: string) => {
+    try {
+      await api.pharmacy.updateOrderStatus(orderId, newStatus);
+      toast.success('Order status updated successfully');
+      await loadPharmacyData(); // Reload to update status
+    } catch (error) {
+      console.error('Failed to update order status:', error);
+      toast.error('Failed to update order status');
+    }
+  };
+
+
 
 
 
@@ -242,9 +281,10 @@ export const AdminPharmacy = () => {
       </div>
 
       <Tabs defaultValue="medicines" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="medicines">Medicines</TabsTrigger>
           <TabsTrigger value="prescriptions">Prescriptions</TabsTrigger>
+          <TabsTrigger value="orders">Orders</TabsTrigger>
         </TabsList>
 
         {/* Medicines Tab */}
@@ -325,15 +365,6 @@ export const AdminPharmacy = () => {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="medicine-manufacturer">Manufacturer</Label>
-                    <Input
-                      id="medicine-manufacturer"
-                      value={medicineForm.manufacturer}
-                      onChange={(e) => setMedicineForm({ ...medicineForm, manufacturer: e.target.value })}
-                      placeholder="Pharma Corp"
-                    />
-                  </div>
-                  <div className="space-y-2">
                     <Label htmlFor="medicine-dosage-form">Dosage Form</Label>
                     <Input
                       id="medicine-dosage-form"
@@ -364,19 +395,6 @@ export const AdminPharmacy = () => {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="medicine-status">Status</Label>
-                    <Select value={medicineForm.status} onValueChange={(value: string) => setMedicineForm({ ...medicineForm, status: value })}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ACTIVE">Active</SelectItem>
-                        <SelectItem value="INACTIVE">Inactive</SelectItem>
-                        <SelectItem value="DISCONTINUED">Discontinued</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
                     <Label htmlFor="medicine-image-url">Image URL</Label>
                     <Input
                       id="medicine-image-url"
@@ -385,60 +403,6 @@ export const AdminPharmacy = () => {
                       placeholder="https://example.com/image.jpg"
                     />
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="medicine-description">Description</Label>
-                  <Textarea
-                    id="medicine-description"
-                    value={medicineForm.description}
-                    onChange={(e) => setMedicineForm({ ...medicineForm, description: e.target.value })}
-                    placeholder="Medicine description"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="medicine-indications">Indications</Label>
-                  <Textarea
-                    id="medicine-indications"
-                    value={medicineForm.indications}
-                    onChange={(e) => setMedicineForm({ ...medicineForm, indications: e.target.value })}
-                    placeholder="Medical conditions this medicine treats"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="medicine-contraindications">Contraindications</Label>
-                  <Textarea
-                    id="medicine-contraindications"
-                    value={medicineForm.contraindications}
-                    onChange={(e) => setMedicineForm({ ...medicineForm, contraindications: e.target.value })}
-                    placeholder="Conditions where this medicine should not be used"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="medicine-side-effects">Side Effects</Label>
-                  <Textarea
-                    id="medicine-side-effects"
-                    value={medicineForm.sideEffects}
-                    onChange={(e) => setMedicineForm({ ...medicineForm, sideEffects: e.target.value })}
-                    placeholder="Possible side effects"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="medicine-precautions">Precautions</Label>
-                  <Textarea
-                    id="medicine-precautions"
-                    value={medicineForm.precautions}
-                    onChange={(e) => setMedicineForm({ ...medicineForm, precautions: e.target.value })}
-                    placeholder="Precautions to take while using this medicine"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="medicine-interactions">Interactions</Label>
-                  <Textarea
-                    id="medicine-interactions"
-                    value={medicineForm.interactions}
-                    onChange={(e) => setMedicineForm({ ...medicineForm, interactions: e.target.value })}
-                    placeholder="Drug interactions"
-                  />
                 </div>
                 <div className="flex gap-2 pt-4">
                   <Button onClick={editingMedicine ? handleEditMedicine : handleAddMedicine}>
@@ -497,9 +461,76 @@ export const AdminPharmacy = () => {
                         <p className="text-xs text-gray-500">Doctor: {prescription.doctorName} | Date: {prescription.date}</p>
                       </div>
                     </div>
-                    <Badge variant="outline">
-                      {prescription.status}
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline">
+                        {prescription.status}
+                      </Badge>
+                      {prescription.status === 'PENDING' && (
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-green-600 border-green-600 hover:bg-green-50"
+                            onClick={() => handleAcceptPrescription(prescription.id)}
+                          >
+                            <CheckCircle className="h-4 w-4 mr-1" />
+                            Accept
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-red-600 border-red-600 hover:bg-red-50"
+                            onClick={() => handleDenyPrescription(prescription.id)}
+                          >
+                            <XCircle className="h-4 w-4 mr-1" />
+                            Cancel
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        {/* Orders Tab */}
+        <TabsContent value="orders" className="space-y-6">
+          <h2 className="text-xl font-semibold">Orders</h2>
+          <div className="grid gap-4">
+            {orders.map((order) => (
+              <Card key={order.id}>
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Package className="h-8 w-8 text-purple-600" />
+                      <div>
+                        <h3 className="font-semibold">Order #{order.id}</h3>
+                        <p className="text-sm text-gray-600">Patient: {order.patientName}</p>
+                        <p className="text-xs text-gray-500">Date: {new Date(order.orderDate).toLocaleDateString()} | Total: ₹{order.totalAmount}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Select
+                        value={order.status}
+                        onValueChange={(value: string) => handleUpdateOrderStatus(order.id, value)}
+                      >
+                        <SelectTrigger className="w-32">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pending">Pending</SelectItem>
+                          <SelectItem value="confirmed">Confirmed</SelectItem>
+                          <SelectItem value="shipped">Shipped</SelectItem>
+                          <SelectItem value="delivered">Delivered</SelectItem>
+                          <SelectItem value="cancelled">Cancelled</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Badge variant="outline">
+                        {order.status}
+                      </Badge>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
